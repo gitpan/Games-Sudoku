@@ -1,0 +1,12 @@
+Revision history for Perl extension Sudoku.
+
+0.01  Mon Aug 15 17:12:00 2005
+	- original version; created by h2xs 1.23 with options
+		-AX -n Sudoku
+
+0.03  Aug 18 2005
+	- fixed the bug with reading files created under Windows: replaced chop with chomp
+	
+0.04 Aug 18 2005
+	- added `init` function to enable board initialisation from an array
+	- renamed the distribution from Sudoku-xxx.tar.gz to Games-Sudoku-xxx.tar.gz

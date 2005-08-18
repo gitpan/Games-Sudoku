@@ -1,0 +1,98 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Sudoku - Perl extension for solving Su Doku puzzles</title>
+<link rev="made" href="mailto:root@localhost" />
+</head>
+
+<body style="background-color: white">
+
+<p><a name="__index__"></a></p>
+<!-- INDEX BEGIN -->
+
+<ul>
+
+	<li><a href="#name">NAME</a></li>
+	<li><a href="#synopsis">SYNOPSIS</a></li>
+	<li><a href="#description">DESCRIPTION</a></li>
+	<li><a href="#author">AUTHOR</a></li>
+	<li><a href="#copyright_and_license">COPYRIGHT AND LICENSE</a></li>
+</ul>
+<!-- INDEX END -->
+
+<hr />
+<p>
+</p>
+<h1><a name="name">NAME</a></h1>
+<p>Sudoku - Perl extension for solving Su Doku puzzles</p>
+<p>
+</p>
+<hr />
+<h1><a name="synopsis">SYNOPSIS</a></h1>
+<pre>
+    use Games::Sudoku::Board;</pre>
+<pre>
+    my @board = qw(
+                   0 2 0 8 1 0 7 4 0
+                   7 0 0 0 0 3 1 0 0
+                   0 9 0 0 0 2 8 0 5
+                   0 0 9 0 4 0 0 8 7
+                   4 0 0 2 0 8 0 0 3
+                   1 6 0 0 3 0 2 0 0
+                   3 0 2 7 0 0 0 6 0
+                   0 0 5 6 0 0 0 0 8
+                   0 7 6 0 5 1 0 9 0
+                   );</pre>
+<pre>
+   my $game = new Games::Sudoku::Board('Game 1', $debug, $pause);</pre>
+<pre>
+   $game-&gt;init(\@board);</pre>
+<pre>
+   $game-&gt;displayBoard();</pre>
+<pre>
+   $game-&gt;solve();</pre>
+<pre>
+   $game-&gt;displayBoard();</pre>
+<p>
+</p>
+<hr />
+<h1><a name="description">DESCRIPTION</a></h1>
+<pre>
+    This module solves Su Doku puzzles.</pre>
+<pre>
+    The puzzle should be stored in a single dimension array or in a file, where unknown characters presented by zero</pre>
+<pre>
+    A sample code along with test layouts can be found in examples directory of this distribution.</pre>
+<hr />
+<h1><a name="todo">TODO</a></h1>
+<pre>
+    - Add error handling and invalid layout capture</pre>
+<pre>
+    - Add support for 16x16 boards
+    
+    - Write better documentation</pre>
+<p></p>
+<p>
+</p>
+<hr />
+<h1><a name="author">AUTHOR</a></h1>
+<pre>
+    Eugene Kulesha, &lt;kulesha@gmail.com&gt;</pre>
+<p>
+</p>
+<hr />
+<h1><a name="copyright_and_license">COPYRIGHT AND LICENSE</a></h1>
+<pre>
+    Copyright (C) 2005 by Eugene Kulesha</pre>
+<pre>
+    This library is free software; you can redistribute it and/or modify
+    it under the same terms as Perl itself, either Perl version 5.8.4 or,
+    at your option, any later version of Perl 5 you may have available.</pre>
+<pre>
+
+
+</pre>
+
+</body>
+
+</html>

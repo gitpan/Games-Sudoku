@@ -1,0 +1,11 @@
+Changes
+Makefile.PL
+MANIFEST
+README
+t/Sudoku.t
+lib/Games/Sudoku/Board.pm
+lib/Games/Sudoku/Cell.pm
+examples/easy.dat
+examples/medium.dat
+examples/hard.dat
+examples/veryhard.dat
