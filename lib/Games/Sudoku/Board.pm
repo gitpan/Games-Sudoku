@@ -5,7 +5,7 @@ use warnings;
 
 use Games::Sudoku::Cell;
 
-our $VERSION = '0.04';
+our $VERSION = '0.05';
 
 sub new {
     my $caller = shift;
@@ -34,6 +34,43 @@ sub new {
     }
 
     bless $self, $class;
+}
+
+# Function verifies the layout. 
+# Contributed by Michael Cartmell
+ 
+sub verify {
+    my $self = shift;
+    my $OK   = 1;
+    my %data = (
+		row  => [],
+		col  => [],
+		quad => []
+		);
+
+    foreach my $cell ( @{ $self->{BOARD} } ) {
+	$data{row}[ $cell->row ][ $cell->value ]++;
+	$data{col}[ $cell->col ][ $cell->value ]++;
+	$data{quad}[ $cell->quad ][ $cell->value ]++;
+    }
+    foreach my $type (qw(row col quad)) {
+	foreach my $line ( 1 .. 9 ) {
+	    foreach my $value ( 1 .. 9 ) {
+		unless ( defined $data{$type}[$line][$value] ) {
+		    $OK = undef;
+		    warn "In $type $line, $value did not occur\n"
+			if $self->debug;
+		}
+		elsif ( $data{$type}[$line][$value] > 1 ) {
+		    $OK = undef;
+		    warn
+			"In $type $line, $value occured $data{$type}[$line][$value] times\n"
+			if $self->debug;
+		}
+	    }
+	}
+    }
+    return $OK ? 'Solution verified' : 'Failed to verify';
 }
 
 sub init{
@@ -72,6 +109,7 @@ sub displayBoard {
 
 sub solve {
     my $self = shift;
+
     do {
 	do {
 	    $self->pause();
@@ -123,6 +161,7 @@ sub solve {
 	    $self->{BOARD}->[$index]->value = $c->value;
 	    $self->{BOARD}->[$index]->accept = $c->accept;
 	}
+	$self->_unsolved = 0;
 	
     }
     return undef;
@@ -140,7 +179,7 @@ sub pause {
     if (@_) {
 	$self->{PAUSE} = shift;
     } else {
-	if ($self->{PAUSE}) {
+	if ($self->{PAUSE} && $self->debug) {
 	    print " *** Press ENTER to continue ****\n";
 	    my $enter = <STDIN>;
 	}
@@ -317,7 +356,7 @@ Sudoku - Perl extension for solving Su Doku puzzles
 		   0 7 6 0 5 1 0 9 0
 		   );
 
-   my $game = new Games::Sudoku::Board('Game 1', $debug, $pause);
+   my $game = new Games::Sudoku::Board($game_name, $debug, $pause);
 
    $game->init(\@board);
 
@@ -326,6 +365,9 @@ Sudoku - Perl extension for solving Su Doku puzzles
    $game->solve();
 
    $game->displayBoard();
+
+   $game->verify();
+
 
 =head1 DESCRIPTION
 

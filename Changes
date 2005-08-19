@@ -10,3 +10,8 @@ Revision history for Perl extension Sudoku.
 0.04 Aug 18 2005
 	- added `init` function to enable board initialisation from an array
 	- renamed the distribution from Sudoku-xxx.tar.gz to Games-Sudoku-xxx.tar.gz
+
+0.05 Aug 19 2005
+	- added `verify` function to verify the solution is valid (Contributed by Michael Cartmell)
+	- fixed the bug when invalid solution was reported because the algorithm did not terminate 
+when the solution was found but carried onto the next branch 

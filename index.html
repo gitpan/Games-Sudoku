@@ -14,7 +14,6 @@
 
 	<li><a href="#name">NAME</a></li>
 	<li><a href="#synopsis">SYNOPSIS</a></li>
-	<li><a href="#description">DESCRIPTION</a></li>
 	<li><a href="#author">AUTHOR</a></li>
 	<li><a href="#copyright_and_license">COPYRIGHT AND LICENSE</a></li>
 </ul>
@@ -44,7 +43,7 @@
                    0 7 6 0 5 1 0 9 0
                    );</pre>
 <pre>
-   my $game = new Games::Sudoku::Board('Game 1', $debug, $pause);</pre>
+   my $game = new Games::Sudoku::Board($game_name, $debug, $pause);</pre>
 <pre>
    $game-&gt;init(\@board);</pre>
 <pre>
@@ -53,18 +52,20 @@
    $game-&gt;solve();</pre>
 <pre>
    $game-&gt;displayBoard();</pre>
-<p>
-</p>
-<hr />
-<h1><a name="description">DESCRIPTION</a></h1>
+<pre>
+   $game-&gt;verify();</pre>
+<pre>
+
+=head1 DESCRIPTION</pre>
 <pre>
     This module solves Su Doku puzzles.</pre>
 <pre>
     The puzzle should be stored in a single dimension array or in a file, where unknown characters presented by zero</pre>
 <pre>
     A sample code along with test layouts can be found in examples directory of this distribution.</pre>
-<hr />
-<h1><a name="todo">TODO</a></h1>
+<pre>
+
+=head1 TODO</pre>
 <pre>
     - Add error handling and invalid layout capture</pre>
 <pre>

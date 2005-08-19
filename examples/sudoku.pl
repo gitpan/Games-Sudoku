@@ -13,6 +13,7 @@ GetOptions('file=s' => \$fname, 'pause' => \$pause, 'debug' => \$debug);
 
 my $game = new Games::Sudoku::Board;
 
+
 my @board = qw(
 	       0 2 0 8 1 0 7 4 0
 	       7 0 0 0 0 3 1 0 0
@@ -42,3 +43,4 @@ $game->solve();
 
 $game->displayBoard();
 
+print "VERIFY: ", $game->verify(), "\n";
