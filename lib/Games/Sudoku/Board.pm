@@ -5,7 +5,16 @@ use warnings;
 
 use Games::Sudoku::Cell;
 
-our $VERSION = '0.05';
+our $VERSION = '0.06';
+
+# Array will hold the number and difficulty of steps taken to find a solution
+# It can be used later to classify the board difficulty
+my @Route = ();
+
+sub showRoute {
+    print " @Route \n";
+}
+
 
 sub new {
     my $caller = shift;
@@ -97,14 +106,16 @@ sub initFromFile {
 sub displayBoard {
     my $self = shift;
     
-    print "***** ", $self->_name, " *** STEP ", $self->_step, " ************************************************************";
+    my $header = sprintf "***** %s *** STEP %d ", $self->_name, scalar(@Route);
+    print $header, "*" x (84 - length $header);
+
     foreach my $p (sort { 10*($a->row <=> $b->row) + ($a->col <=> $b->col) }@{$self->{BOARD}}) {
 	if ($p->col == 1) {
 	    print "\n";
 	}
 	print $p->value ? sprintf("%8d ", $p->value): sprintf("(%6s) ", @{$p->accept} == 9 ? '1 .. 9' : join('', @{$p->accept}));
     }
-    print "\n************************************************************************************\n";
+    print "\n", "*" x 84, "\n";
 }
 
 sub solve {
@@ -137,7 +148,7 @@ sub solve {
 
 	foreach my $b (@$branches) {
 	    $sb = $self->new(
-			     $self->_name."Branch(@$b)",
+			     $self->_name."/ B(@$b)",
 			     $self->debug,
 			     $self->pause
 			     );
@@ -148,9 +159,11 @@ sub solve {
 	    }
 	    my $code;
 	    push @$code, $b;
+	    $self->displayBoard() if $self->debug;
 	    $sb->_moves = $code;
 	    $sb->_updateBoard();
 	    $sb->solve();
+	    push @Route, 'R'; # Branch processed 
 	    last if (! $sb->_unsolved);
 	}
 	# $sb contains the successfull branch;
@@ -161,10 +174,18 @@ sub solve {
 	    $self->{BOARD}->[$index]->value = $c->value;
 	    $self->{BOARD}->[$index]->accept = $c->accept;
 	}
-	$self->_unsolved = 0;
+	$self->_unsolved = $sb->_unsolved;
 	
     }
     return undef;
+}
+
+# Function will generate a random board.
+# Still under development. 
+
+sub generateBoard {
+    my $self = shift;
+    while ($self->_generateCell()) {}
 }
 
 sub debug {
@@ -196,6 +217,7 @@ sub _name :lvalue { $_[0]->{NAME} ;}
 
 sub _findHard {
     my $self = shift;
+
     my $cell = (sort { @{$a->accept} <=> @{$b->accept} } grep {! $_->value} @{$self->{BOARD}})[0];
     my $branches;
 
@@ -203,6 +225,7 @@ sub _findHard {
 	push @$branches, [ $cell->row, $cell->col, $v ];
     }
 
+    push @Route, 'H' if $branches;
     return $branches;
 }
 
@@ -211,17 +234,26 @@ sub _findMedium {
 
     my $notfound = 0;
     my $code;
+    my $ccode;
     my $error;
+
+# Go through the board a row by row, locating the cells that in their 'accept' filed have a number that can go only into that cell, e.g
+
+# in case of (12) (13) (234), only cell 3 can accept 4
 
     for (my $row = 1; $row < 10; $row ++) {
 	my %vals;
+	# Get all the cells that belong to the row
 	my @cells =  grep{ ($_->value == 0) && ($_->row == $row) } @{$self->{BOARD}};
 
+	# Build a hash that will have numbers as its keys and cell coordinates that accept this number as its value
 	foreach my $rv (@cells) {
 	    foreach my $av (@{$rv->accept}) {
 		push @{$vals{$av}}, [$rv->row, $rv->col, $av];
 	    }
 	}
+
+	# Find those numbers that only have one cell coordinate
 	foreach my $key (keys %vals) {
 	    if (scalar @{$vals{$key}} == 1) {
 		push @$code, pop @{$vals{$key}};
@@ -229,6 +261,15 @@ sub _findMedium {
 	}
     }
 
+    if ($code) {
+# Found some moves - go and update the board
+	$self->_moves = $code;
+	push @Route, 'M';
+	return scalar(@$code);
+    }
+
+
+# Repeat the same process for columns
     for (my $col = 1; $col < 10; $col ++) {
 	my %vals;
 	my @cells =  grep{ ($_->value == 0) && ($_->col == $col) } @{$self->{BOARD}};
@@ -246,6 +287,14 @@ sub _findMedium {
 	}
     }
 
+    if ($code) {
+# Found some moves - go and update the board
+	$self->_moves = $code;
+	push @Route, 'M';
+	return scalar(@$code);
+    }
+
+# And for squares
     for (my $quad = 1; $quad < 10; $quad ++) {
 	my %vals;
 	my @cells =  grep{ ($_->value == 0) && ($_->quad == $quad) } @{$self->{BOARD}};
@@ -263,8 +312,14 @@ sub _findMedium {
 	}
     }
 
-    $self->_moves = $code;
-    return $code ? (scalar(@$code)) : 0;
+    if ($code) {
+# Found some moves - go and update the board
+	$self->_moves = $code;
+	push @Route, 'M';
+	return scalar(@$code);
+    }
+    
+    return 0;
 }
 
 sub _findSimple {
@@ -275,10 +330,13 @@ sub _findSimple {
     my $error;
     $self->_step ++;
 
+    my %cols = ();
+    my %rows = ();
+
     foreach my $p (sort { 10*($a->row <=> $b->row) + ($a->col <=> $b->col) }@{$self->{BOARD}}) {
 	next if ($p->value);
 	$notfound ++;
-	my %vals = ( qw(1 1 2 1 3 1 4 1 5 1 6 1 7 1 8 1 9 1) );
+	my %vals = map { $_ => 1 } ( qw(1 2 3 4 5 6 7 8 9) );
 
 	my @rvals =  grep{ $_->row == $p->row } @{$self->{BOARD}};
 	foreach my $rv (@rvals) {
@@ -300,7 +358,14 @@ sub _findSimple {
 	if (my $num = @vals) {
 	    if ($num == 1) {
 		my $v = $vals[0];
-		push @$code, [$p->row, $p->col, $v];
+# Check that we don't have this value yet
+		if (grep {($_->[1] == $p->col || $_->[0] == $p->row || $_->[3] == $p->quad) && ($_->[2] == $v)} @$code) {
+# Must have gone somewhere wrong - we already assigned this value somewhere in this row/col
+		    push @$error, [$p->row, $p->col];
+		} else {
+		    push @$code, [$p->row, $p->col, $v, $p->quad];
+		}
+
 	    }
 	} else {
 # Must have gone somewhere wrong - there is a cell that does not have a value and cannot accept any values
@@ -310,6 +375,7 @@ sub _findSimple {
     $self->_unsolved = $notfound;
     $self->_moves = $code;
     $self->_error = $error;
+    push @Route, 'S' if $code;
     return $code ? (scalar(@$code)) : 0;
 }
 
@@ -331,6 +397,26 @@ sub _updateBoard {
     }    
     return 1;
 }
+
+sub _generateCell {
+
+    my $self = shift;
+
+    my $cell = (sort { 10*($a->row <=> $b->row) + 5 * ( @{$a->accept} <=> @{$b->accept} ) + ($a->col <=> $b->col)} grep {! $_->value} @{$self->{BOARD}})[0];
+
+    return 0 unless $cell;
+
+    (print "ERROR!\n" and return 0) unless (scalar(@{$cell->accept}) > 0);
+    my $v = $cell->accept->[rand (@{$cell->accept})];
+
+    my $code;
+    push @$code, [$cell->row, $cell->col, $v];
+    $self->_moves = $code;
+    $self->_updateBoard();
+    $self->_findSimple();
+    return 1;
+}
+
 
 1;
 

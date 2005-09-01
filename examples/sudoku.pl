@@ -11,21 +11,22 @@ my ($fname, $pause, $debug) = ('', 0, 0);
 
 GetOptions('file=s' => \$fname, 'pause' => \$pause, 'debug' => \$debug);
 
+ my @board = qw(
+                   0 2 0 8 1 0 7 4 0
+                   7 0 0 0 0 3 1 0 0
+                   0 9 0 0 0 2 8 0 5
+                   0 0 9 0 4 0 0 8 7
+                   4 0 0 2 0 8 0 0 3
+                   1 6 0 0 3 0 2 0 0
+                   3 0 2 7 0 0 0 6 0
+                   0 0 5 6 0 0 0 0 8
+                   0 7 6 0 5 1 0 9 0
+                   );
+
 my $game = new Games::Sudoku::Board;
 
-
-my @board = qw(
-	       0 2 0 8 1 0 7 4 0
-	       7 0 0 0 0 3 1 0 0
-	       0 9 0 0 0 2 8 0 5
-	       0 0 9 0 4 0 0 8 7
-	       4 0 0 2 0 8 0 0 3
-	       1 6 0 0 3 0 2 0 0
-	       3 0 2 7 0 0 0 6 0
-	       0 0 5 6 0 0 0 0 8
-	       0 7 6 0 5 1 0 9 0
-	       );
-
+$game->debug($debug);
+$game->pause($pause);
 
 if ($fname) {
     $game->initFromFile($fname);
@@ -33,14 +34,14 @@ if ($fname) {
     $game->init(\@board);
 }
 
-$game->debug($debug);
-
-$game->pause($pause);
-
 $game->displayBoard();
 
 $game->solve();
 
 $game->displayBoard();
 
-print "VERIFY: ", $game->verify(), "\n";
+print "VERIFY: ". $game->verify(), "\n";
+
+
+
+

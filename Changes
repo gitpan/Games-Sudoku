@@ -15,3 +15,8 @@ Revision history for Perl extension Sudoku.
 	- added `verify` function to verify the solution is valid (Contributed by Michael Cartmell)
 	- fixed the bug when invalid solution was reported because the algorithm did not terminate 
 when the solution was found but carried onto the next branch 
+
+0.06 Sep 01 2005
+	- bug fix: `solve` function did not return correctly from an invalid subbranch
+	The board that exposed the bug was submitted by Michael Cartmell and can be found in examples/evil.dat file
+	- updated `displayBoard` function to display a nicer header 
