@@ -20,3 +20,9 @@ when the solution was found but carried onto the next branch
 	- bug fix: `solve` function did not return correctly from an invalid subbranch
 	The board that exposed the bug was submitted by Michael Cartmell and can be found in examples/evil.dat file
 	- updated `displayBoard` function to display a nicer header 
+
+1.00 Jan 08 2010
+	- bug fix: `solve` function was going into practically infinite loop if the board layout was illegal 
+	i.e the same number appears twice in a line, a column or a quad, and contained only a couple of entries.
+	The fix includes an update to verify function and to the example solver.
+

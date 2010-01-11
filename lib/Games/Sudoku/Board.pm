@@ -5,7 +5,7 @@ use warnings;
 
 use Games::Sudoku::Cell;
 
-our $VERSION = '0.06';
+our $VERSION = '1.00';
 
 # Array will hold the number and difficulty of steps taken to find a solution
 # It can be used later to classify the board difficulty
@@ -50,6 +50,11 @@ sub new {
  
 sub verify {
     my $self = shift;
+# $initial indicates the verification of the initial board 
+# basically we just check the numbers do not appear twice in a line, a column or a quad.
+
+    my $initial = shift;
+
     my $OK   = 1;
     my %data = (
 		row  => [],
@@ -65,21 +70,22 @@ sub verify {
     foreach my $type (qw(row col quad)) {
 	foreach my $line ( 1 .. 9 ) {
 	    foreach my $value ( 1 .. 9 ) {
-		unless ( defined $data{$type}[$line][$value] ) {
-		    $OK = undef;
-		    warn "In $type $line, $value did not occur\n"
-			if $self->debug;
+		unless ( defined ($data{$type}[$line][$value]) ) {
+		    unless ( $initial)  {
+			$OK = 0;
+			warn "In $type $line, number $value did not occur\n";
+		    }
+		    next;
 		}
-		elsif ( $data{$type}[$line][$value] > 1 ) {
-		    $OK = undef;
-		    warn
-			"In $type $line, $value occured $data{$type}[$line][$value] times\n"
-			if $self->debug;
+		if ( $data{$type}[$line][$value] > 1 ) {
+		    $OK = 0;
+		    warn "In $type $line, number $value occured $data{$type}[$line][$value] times\n";
 		}
 	    }
 	}
     }
-    return $OK ? 'Solution verified' : 'Failed to verify';
+    warn $OK ? "Layout: verified Ok\n" : "Layout:  failed to verify\n";
+    return $OK;
 }
 
 sub init{
@@ -89,7 +95,6 @@ sub init{
 	my $p = $self->{BOARD}[$i];
 	$p->value = $gdata->[$i];
     }
-    return undef;
 }
 
 sub initFromFile {
@@ -116,10 +121,14 @@ sub displayBoard {
 	print $p->value ? sprintf("%8d ", $p->value): sprintf("(%6s) ", @{$p->accept} == 9 ? '1 .. 9' : join('', @{$p->accept}));
     }
     print "\n", "*" x 84, "\n";
+
 }
 
 sub solve {
     my $self = shift;
+
+
+    return unless ($self->verify(1));
 
     do {
 	do {
@@ -127,7 +136,10 @@ sub solve {
 	    $self->displayBoard() if ($self->_findSimple() && $self->debug);
 	    if ($self->_error) {
 		if ($self->debug) {
-		    print "WRONG BRANCH :",$self->_name(), "\n";
+		    warn "WRONG BRANCH :",$self->_name(), "\n";
+		    $self->debug(1);
+                    $self->pause(1);
+		    $self->displayBoard();
 		}
 		return -1;
 	    }

@@ -36,11 +36,13 @@ if ($fname) {
 
 $game->displayBoard();
 
-$game->solve();
+if ($game->verify(1)) {
+    $game->solve();
 
-$game->displayBoard();
+    $game->displayBoard();
 
-print "VERIFY: ". $game->verify(), "\n";
+    $game->verify(0);
+}
 
 
 

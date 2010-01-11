@@ -1,4 +1,4 @@
-Sudoku version 0.06
+Sudoku version 1.00
 ===================
 
 INSTALLATION
@@ -10,6 +10,12 @@ To install this module type the following:
    make test
    make install
 
+You can run a sample solver in examples directory
+
+# cd examples
+# sudoku.pl -d -p
+
+
 DEPENDENCIES
 
  None
@@ -18,7 +24,7 @@ COPYRIGHT AND LICENCE
 
 Put the correct copyright and licence information here.
 
-Copyright (C) 2005 by Eugene Kulesha <jset@cpan.org>
+Copyright (C) 2005-2010 by Eugene Kulesha <jset@cpan.org>
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself, either Perl version 5.6.0 or,
